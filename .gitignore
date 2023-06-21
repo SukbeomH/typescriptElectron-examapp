@@ -1,2 +1,5 @@
 node_modules
 dist
+certificate
+image
+.env
