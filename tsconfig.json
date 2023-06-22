@@ -1,10 +1,16 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "noImplicitAny": true,
+    "declaration": true,
+    "removeComments": true,
     "sourceMap": true,
-    "outDir": "dist",
-    "baseUrl": ".",
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false, 
+    "outDir": "./typescript",
+    "baseUrl": "./",
     "paths": {
       "*": ["node_modules/*"]
     }
