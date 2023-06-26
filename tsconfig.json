@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "CommonJS",
     "declaration": true,
     "removeComments": true,
     "sourceMap": true,
@@ -9,11 +9,13 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false, 
+    "esModuleInterop": true,
     "outDir": "./typescript",
     "baseUrl": "./",
     "paths": {
       "*": ["node_modules/*"]
-    }
+    },
+    "target": "ES2015"
   },
   "include": [
     "src/**/*"
