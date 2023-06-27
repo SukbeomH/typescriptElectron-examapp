@@ -1,13 +1,21 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "noImplicitAny": true,
+    "module": "CommonJS",
+    "declaration": true,
+    "removeComments": true,
     "sourceMap": true,
-    "outDir": "dist",
-    "baseUrl": ".",
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false, 
+    "esModuleInterop": true,
+    "outDir": "./typescript",
+    "baseUrl": "./",
     "paths": {
       "*": ["node_modules/*"]
-    }
+    },
+    "target": "ES2015"
   },
   "include": [
     "src/**/*"

@@ -1,5 +1,7 @@
 node_modules
 dist
+typescript
 certificate
 image
 .env
+*.env
