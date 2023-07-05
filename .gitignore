@@ -5,3 +5,5 @@ certificate
 image
 .env
 *.env
+electron-builder.yml
+properties.*

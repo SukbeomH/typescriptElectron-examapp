@@ -3,10 +3,10 @@ import { app, BrowserWindow, desktopCapturer, globalShortcut, dialog } from "ele
 import { mediaAccess } from "./module/mediaAccess";
 import { getSystemInfo } from "./module/system";
 import { intervalProcess } from "./module/interval";
-import { getPlatform } from "./property";
 import 'dotenv/config'
+import { getPlatform } from "./properties";
 
-const { url, code, exit, cheat } = getPlatform(process.env.PLATFORM);
+const { url, code, exit, cheat } = getPlatform("KT");
 
 async function createWindow() {
 	// Create the browser window.
@@ -23,7 +23,6 @@ async function createWindow() {
 			defaultEncoding: "UTF-8",
 			webviewTag: true,
 			spellcheck: false,
-			additionalArguments: ["--kiosk", "--fullscreen", "--disable-gpu"],
 		},
 	});
 	// and load the URL
@@ -70,8 +69,6 @@ async function createWindow() {
 					});
 			}
 		);
-		mainWindow.setKiosk(true);
-		mainWindow.maximize();
 	}
 
 	// Get the current URL When the url is changed
@@ -96,59 +93,58 @@ async function createWindow() {
 	await mediaAccess();
 }
 
-app.commandLine.appendSwitch('disable-gpu')
+app.commandLine.appendSwitch('disable-gpu');
 
 // When the app is ready
 app
 	.whenReady()
 	.then(async () => {
-			// Validate the system information
-			const systemValidate:boolean = await getSystemInfo();
-			if (systemValidate) {
-				await createWindow()
-					.then(async () => {
-						await intervalProcess(url + cheat);
-					})
-					.catch((err) => {
-						console.log(err);
-					});
-				// Disable the keyboard shortcuts
-				globalShortcut.unregisterAll();
-				// Register a keyboard shortcut to quit the app
-				globalShortcut.register("Command+Q", () => {
-					app.quit();
-				});
-				// For Windows
-				globalShortcut.register("Alt+F4", () => {
-					app.quit();
-				});
-				globalShortcut.register("Alt+Tab", () => {
-					// disable the Alt + Tab
-					app.focus();
-				});
-				globalShortcut.register("Ctrl+F1", () => {
-					// Create Dialog, shows the current screen size
-					const window: BrowserWindow = BrowserWindow.getFocusedWindow()
-					window.maximize();
-					dialog.showMessageBox(window, {
-						title: "Screen Status",
-						message:
-							`Full Screen: ${window.isFullScreen().toString()}\n
-						Kiosk: ${window.isKiosk().toString()}\n
-						Maximized: ${window.isMaximized().toString()}\n
-						Visible: ${window.isVisible().toString()}\n
-						Always On Top: ${window.isAlwaysOnTop().toString()}\n
-						Movable: ${window.isMovable().toString()}\n
-						Resizable: ${window.isResizable().toString()}\n
-						Closable: ${window.isClosable().toString()}\n
-						Enabled: ${window.isEnabled().toString()}\n
-						Focusable: ${window.isFocusable().toString()}\n`,
-						buttons: ["OK"],
-					});
-				})
-			} else {
-				app.quit();
-			}
+		// Validate the system information
+		await getSystemInfo().then((res:boolean) => {
+			if (!res) app.quit();
+		});
+		// Create the window
+		await createWindow()
+			.then(async () => {
+				await intervalProcess(url + cheat);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+		// Disable the keyboard shortcuts
+		globalShortcut.unregisterAll();
+		// Register a keyboard shortcut to quit the app
+		globalShortcut.register("Command+Q", () => {
+			app.quit();
+		});
+		// For Windows
+		globalShortcut.register("Alt+F4", () => {
+			app.quit();
+		});
+		globalShortcut.register("Alt+Tab", () => {
+			// disable the Alt + Tab
+			app.focus();
+		});
+		globalShortcut.register("Ctrl+F1", () => {
+			// Create Dialog, shows the current screen size
+			const window: BrowserWindow = BrowserWindow.getFocusedWindow()
+			window.maximize();
+			dialog.showMessageBox(window, {
+				title: "Screen Status",
+				message:
+					`Full Screen: ${window.isFullScreen().toString()}\n
+				Kiosk: ${window.isKiosk().toString()}\n
+				Maximized: ${window.isMaximized().toString()}\n
+				Visible: ${window.isVisible().toString()}\n
+				Always On Top: ${window.isAlwaysOnTop().toString()}\n
+				Movable: ${window.isMovable().toString()}\n
+				Resizable: ${window.isResizable().toString()}\n
+				Closable: ${window.isClosable().toString()}\n
+				Enabled: ${window.isEnabled().toString()}\n
+				Focusable: ${window.isFocusable().toString()}\n`,
+				buttons: ["OK"],
+			});
+		})
 	})
 app.on("activate", async function () {
 	// On macOS it's common to re-create a window in the app when the

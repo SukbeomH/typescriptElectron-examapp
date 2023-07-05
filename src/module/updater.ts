@@ -1,8 +1,8 @@
 import { dialog } from "electron";
 import { UpdateCheckResult, autoUpdater } from "electron-updater";
 
-export const updateManager = async (): Promise<void> => {
-  const updateStatus: UpdateCheckResult = await autoUpdater.checkForUpdates()
+export const updateManager = async (): Promise<boolean> => {
+  const updateStatus: UpdateCheckResult = await autoUpdater.checkForUpdates();
   dialog.showMessageBox({
     type: "info",
     title: "업데이트 확인",
@@ -11,9 +11,9 @@ export const updateManager = async (): Promise<void> => {
     buttons: ["확인"],
   }).then(({response}) => {
     if (response === 0) {
-      autoUpdater.quitAndInstall()
+      autoUpdater.quitAndInstall();
     }
-    return;
+    return false;
   })
-  return;
+  return true;
 }

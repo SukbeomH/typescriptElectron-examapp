@@ -51,6 +51,8 @@ const config: Configuration = {
     hardenedRuntime: true,
     entitlements: 'entitlements.mac.plist',
     gatekeeperAssess: false,
+    notarize: false,
+    artifactName: `${process.env.PRODUCT_NAME}_Mac.dmg`,
   },
   dmg: {
     sign: false,
@@ -64,6 +66,7 @@ const config: Configuration = {
       releaseType: 'draft',
     },
   ],
+  afterSign: 'src/notarize.js',
 };
 
 build({ config });

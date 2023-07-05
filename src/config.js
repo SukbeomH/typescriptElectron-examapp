@@ -3,8 +3,8 @@ require('dotenv').config()
 
 const config = {
   appId: process.env.APP_ID,
-  productName: process.env.PRODUCT_NAME,
-  icon: process.env.ICON,
+  productName: process.env.PLATFORM,
+  icon: './image/' + process.env.PLATFORM + '.png',
   buildVersion: process.env.BUILD_VERSION,
   directories: {
     output: 'dist',
@@ -21,7 +21,7 @@ const config = {
   ],
   asar: true,
   win: {
-    icon: process.env.ICON,
+    icon: './image/' + process.env.PLATFORM + '.png',
     target: {
       target: 'nsis',
       arch: ['x64'],
@@ -36,11 +36,12 @@ const config = {
     deleteAppDataOnUninstall: true,
     createDesktopShortcut: true,
     warningsAsErrors: false,
-    uninstallDisplayName: `${process.env.PRODUCT_NAME} Uninstaller`,
-    artifactName: `${process.env.PRODUCT_NAME}_Windows.exe`,
+    uninstallDisplayName: `${process.env.PLATFORM} Uninstaller`,
+    artifactName: `${process.env.PLATFORM}_Windows.exe`,
   },
   mac: {
-    icon: process.env.ICON,
+    // icon: '../image/' + process.env.PLATFORM + '.png',
+    icon: './image/' + process.env.PLATFORM + '.png',
     target: {
       target: 'default',
       arch: ['x64', 'arm64'],
@@ -51,6 +52,8 @@ const config = {
     hardenedRuntime: true,
     entitlements: 'entitlements.mac.plist',
     gatekeeperAssess: false,
+    artifactName: `${process.env.PLATFORM}.dmg`,
+    notarize: false,
   },
   dmg: {
     sign: false,
