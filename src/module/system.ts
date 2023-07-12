@@ -10,7 +10,7 @@ export const getSystemInfo = async (): Promise<boolean> => {
 		// if memory is less than 4GB or System version is below Windows10, return Dialog
 		const core: number = Number(execSync('wmic cpu get NumberOfCores').toString().split('\n')[1].trim())
 		const thread: number = Number(execSync('wmic cpu get NumberOfLogicalProcessors').toString().split('\n')[1].trim())
-		if (core < 2 || thread <= 3 || systemMemory <= 3 || systemVersion < 10) {
+		if (thread <= 3 || systemMemory <= 3 || systemVersion < 10) {
 			const { response }: MessageBoxReturnValue = await dialog.showMessageBox({
 				type: "error",
 				title: "[프로그램 실행 불가]",
@@ -24,7 +24,7 @@ export const getSystemInfo = async (): Promise<boolean> => {
 				\n
 				[최소 사양]\n	
 				- 시스템: Windows 10\n	
-				- CPU 코어: 4 Core 이상\n
+				- CPU 코어: 2 Core 이상\n
 				- CPU 스레드: 4 thread 이상\n
 				- 메모리 (RAM): 4 GB 이상`,
 				buttons: ["종료"],

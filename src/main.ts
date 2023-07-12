@@ -4,9 +4,9 @@ import { mediaAccess } from "./module/mediaAccess";
 import { getSystemInfo } from "./module/system";
 import { intervalProcess } from "./module/interval";
 import 'dotenv/config'
-import { getPlatform } from "./properties";
+import { getPlatform, property } from "./properties";
 
-const { url, code, exit, cheat } = getPlatform("KT");
+const { url, code, exit, cheat } = property.platform.ACG;
 
 async function createWindow() {
 	// Create the browser window.
@@ -120,10 +120,6 @@ app
 		// For Windows
 		globalShortcut.register("Alt+F4", () => {
 			app.quit();
-		});
-		globalShortcut.register("Alt+Tab", () => {
-			// disable the Alt + Tab
-			app.focus();
 		});
 		globalShortcut.register("Ctrl+F1", () => {
 			// Create Dialog, shows the current screen size
