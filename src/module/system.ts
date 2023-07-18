@@ -1,8 +1,11 @@
 import { execSync } from "child_process";
-import { dialog, app, MessageBoxReturnValue } from "electron";
+import { dialog, MessageBoxReturnValue } from "electron";
 import { getSystemVersion, getSystemMemoryInfo } from "process";
 
 export const getSystemInfo = async (): Promise<boolean> => {
+	// const currentVersion: string = app.getVersion();
+	// const latestVersion: string = autoUpdater.currentVersion.toString();
+
 	// Check System info
 	const systemMemory: number = Number((Number(getSystemMemoryInfo().total) / 10e5).toFixed(2));
 	if (process.platform === "win32") {

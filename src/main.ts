@@ -121,7 +121,7 @@ app
 		globalShortcut.register("Alt+F4", () => {
 			app.quit();
 		});
-		globalShortcut.register("Ctrl+F1", () => {
+		globalShortcut.register("Ctrl+F3", () => {
 			// Create Dialog, shows the current screen size
 			const window: BrowserWindow = BrowserWindow.getFocusedWindow()
 			window.maximize();

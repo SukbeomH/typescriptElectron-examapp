@@ -1,6 +1,6 @@
 {
   "name": "typescript-electron-exam-app",
-  "version": "10.0.0",
+  "version": "23.3.18",
   "description": "Electron Exam App for Remote Testing",
   "keywords": [
     "electron",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/SukbeomH/typescriptElectron-examapp"
+    "url": "https://github.com/ACG-INSA/ReleaseElectron"
   },
   "license": "MIT",
   "main": "typescript/main.js",
@@ -25,7 +25,7 @@
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "start": "yarn build && electron ./typescript/main.js",
     "package": "yarn build && electron-builder build -wm --config ./src/electron-builder.yml",
-    "dist": "yarn build && electron-builder -wm --publish onTagOrDraft"
+    "dist": "yarn build && electron-builder -wm --publish onTagOrDraft --config ./src/electron-builder.yml"
   },
   "devDependencies": {
     "@electron/notarize": "^2.1.0",
