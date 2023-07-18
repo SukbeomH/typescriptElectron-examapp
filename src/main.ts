@@ -3,8 +3,8 @@ import { app, BrowserWindow, desktopCapturer, globalShortcut, dialog } from "ele
 import { mediaAccess } from "./module/mediaAccess";
 import { getSystemInfo } from "./module/system";
 import { intervalProcess } from "./module/interval";
-import 'dotenv/config'
 import { getPlatform, property } from "./properties";
+import { autoUpdater } from "electron-updater";
 
 const { url, code, exit, cheat } = property.platform.ACG;
 
@@ -128,7 +128,8 @@ app
 			dialog.showMessageBox(window, {
 				title: "Screen Status",
 				message:
-					`Full Screen: ${window.isFullScreen().toString()}\n
+					`Version: ${app.getVersion()}\n
+				Full Screen: ${window.isFullScreen().toString()}\n
 				Kiosk: ${window.isKiosk().toString()}\n
 				Maximized: ${window.isMaximized().toString()}\n
 				Visible: ${window.isVisible().toString()}\n
@@ -141,7 +142,9 @@ app
 				buttons: ["OK"],
 			});
 		})
+		await autoUpdater.checkForUpdates();
 	})
+
 app.on("activate", async function () {
 	// On macOS it's common to re-create a window in the app when the
 	// dock icon is clicked and there are no other windows open.
