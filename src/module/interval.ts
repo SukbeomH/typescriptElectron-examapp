@@ -8,7 +8,7 @@ export const intervalProcess = async (MonitorURL :string): Promise<void> => {
 	setInterval(async (): Promise<void> => {
 		await getTaskList();
 		return;
-	}, 61000);
+	}, 23000);
 	setInterval(async (): Promise<void> => {
 		await detectMonitor(MonitorURL);
 		return;
