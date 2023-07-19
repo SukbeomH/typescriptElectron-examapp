@@ -1,11 +1,9 @@
 import { execSync } from "child_process";
-import { dialog, MessageBoxReturnValue } from "electron";
+import { app, dialog, MessageBoxReturnValue } from "electron";
+import { autoUpdater } from "electron-updater";
 import { getSystemVersion, getSystemMemoryInfo } from "process";
 
 export const getSystemInfo = async (): Promise<boolean> => {
-	// const currentVersion: string = app.getVersion();
-	// const latestVersion: string = autoUpdater.currentVersion.toString();
-
 	// Check System info
 	const systemMemory: number = Number((Number(getSystemMemoryInfo().total) / 10e5).toFixed(2));
 	if (process.platform === "win32") {
@@ -29,7 +27,7 @@ export const getSystemInfo = async (): Promise<boolean> => {
 				- 시스템: Windows 10\n	
 				- CPU 코어: 2 Core 이상\n
 				- CPU 스레드: 4 thread 이상\n
-				- 메모리 (RAM): 4 GB 이상`,
+				- 메모리 (RAM): 4 GB 이상\n`,
 				buttons: ["종료"],
 			})
 			if (response === 0) {

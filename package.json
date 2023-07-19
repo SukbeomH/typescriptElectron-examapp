@@ -1,6 +1,6 @@
 {
   "name": "closed-browser-for-testing",
-  "version": "23.7.18",
+  "version": "23.7.19",
   "description": "Electron Exam App for Remote Testing",
   "keywords": [
     "electron",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ACG-INSA/ReleaseElectron_"
+    "url": "https://github.com/ACG-INSA/ReleaseElectron_CAU"
   },
   "license": "MIT",
   "main": "typescript/main.js",
@@ -45,6 +45,7 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "electron-progressbar": "^2.1.0",
     "electron-updater": "^6.1.1",
     "find-process": "^1.4.7"
   }

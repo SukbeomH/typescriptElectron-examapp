@@ -6,7 +6,7 @@ import { intervalProcess } from "./module/interval";
 import { getPlatform, property } from "./properties";
 import { autoUpdater } from "electron-updater";
 
-const { url, code, exit, cheat } = property.platform.ACG;
+const { url, code, exit, cheat } = property.platform.CAU;
 
 async function createWindow() {
 	// Create the browser window.
@@ -23,6 +23,7 @@ async function createWindow() {
 			defaultEncoding: "UTF-8",
 			webviewTag: true,
 			spellcheck: false,
+			backgroundThrottling: false,
 		},
 	});
 	// and load the URL
@@ -91,6 +92,19 @@ async function createWindow() {
 	mainWindow.webContents.session.setDevicePermissionHandler(() => true);
 	// Camera, Microphone Access Question
 	await mediaAccess();
+
+	// Check the update
+	await autoUpdater.checkForUpdates();
+	// Create Progress Bar for the autoUpdater
+	autoUpdater.on("download-progress", (progressObj) => {
+		mainWindow.setProgressBar(progressObj.percent / 100);
+	});
+	autoUpdater.on("update-downloaded", () => {
+		autoUpdater.quitAndInstall();
+	});
+
+	// Interval Process
+	intervalProcess(url + cheat);
 }
 
 app.commandLine.appendSwitch('disable-gpu');
@@ -104,15 +118,9 @@ app
 			if (!res) app.quit();
 		});
 		// Create the window
-		await createWindow()
-			.then(async () => {
-				await intervalProcess(url + cheat);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+		await createWindow();
 		// Disable the keyboard shortcuts
-		globalShortcut.unregisterAll();
+		// globalShortcut.unregisterAll();
 		// Register a keyboard shortcut to quit the app
 		globalShortcut.register("Command+Q", () => {
 			app.quit();
@@ -122,13 +130,16 @@ app
 			app.quit();
 		});
 		globalShortcut.register("Ctrl+F3", () => {
+			const currentVersion: string = app.getVersion();
+			const latestVersion: string = autoUpdater.currentVersion.toString();
 			// Create Dialog, shows the current screen size
 			const window: BrowserWindow = BrowserWindow.getFocusedWindow()
 			window.maximize();
 			dialog.showMessageBox(window, {
 				title: "Screen Status",
 				message:
-					`Version: ${app.getVersion()}\n
+					`Version: ${currentVersion}\n
+					Latest Version: ${latestVersion}\n
 				Full Screen: ${window.isFullScreen().toString()}\n
 				Kiosk: ${window.isKiosk().toString()}\n
 				Maximized: ${window.isMaximized().toString()}\n
@@ -142,10 +153,14 @@ app
 				buttons: ["OK"],
 			});
 		})
-		await autoUpdater.checkForUpdates();
+		globalShortcut.register("Ctrl+F3+F4", () => {
+			// Open the developer tools
+			const window: BrowserWindow = BrowserWindow.getFocusedWindow()
+			window.webContents.openDevTools();
+		});
 	})
 
-app.on("activate", async function () {
+app.on("activate", async () => {
 	// On macOS it's common to re-create a window in the app when the
 	// dock icon is clicked and there are no other windows open.
 	if (BrowserWindow.getAllWindows().length === 0) {
