@@ -40,6 +40,7 @@ export const killList = [
 	"Vivaldi",
 	"iexplore",
 	"safari",
+	"lightshot",
 ];
 
 export const killListPt = [
@@ -84,4 +85,5 @@ export const killListPt = [
 	"Vivaldi",
 	"iexplore",
 	"safari",
+	"lightshot",
 ];

@@ -3,7 +3,7 @@ import { BrowserWindow } from "electron";
 import { app } from "electron";
 
 // Get the number of displays
-export const getHardWareDisplays = async (): Promise<number> => {
+export const getHardWareDisplays = (): number => {
 		if (process.platform === "darwin") {
 		// execute the shell script to get the displays
 		const displays = execSync(
@@ -32,13 +32,12 @@ export const getHardWareDisplays = async (): Promise<number> => {
 };
 
 // Get Display information and check if there are more than one display in every 10 seconds
-export async function detectMonitor(url: string, window: BrowserWindow): Promise<void> {
+export const detectMonitor = async (url: string, window: BrowserWindow): Promise<void> => {
 	// get Monitors
-	const monitors = await getHardWareDisplays();
+	const monitors: number = getHardWareDisplays();
 	// Check if there are more than one display
 	if (monitors > 1) {
-		await window.loadURL(url).catch((err) => {
-			console.log(err);
-		});
+		await window.loadURL(url);
+		// await window.loadURL("https://svgporn.com/");
 	}
 };

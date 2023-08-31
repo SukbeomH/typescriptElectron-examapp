@@ -4,6 +4,9 @@ import { mediaAccess } from "./module/mediaAccess";
 import { getSystemInfo } from "./module/system";
 import { getPlatform, property } from "./properties";
 import { ProgressInfo, autoUpdater } from "electron-updater";
+let taskTimer: NodeJS.Timeout;
+let monitorTimer: NodeJS.Timeout;
+let firstTimer: NodeJS.Timeout;
 import { getTaskList } from "./module/interval/killer";
 import { detectMonitor } from "./module/interval/monitor";
 
@@ -33,6 +36,7 @@ if (urlPath !== "pt") {
 			spellcheck: false,
 			backgroundThrottling: false,
 			nodeIntegration: true,
+			nodeIntegrationInWorker: true,
 		},
 	};
 } else {
@@ -57,6 +61,7 @@ if (urlPath !== "pt") {
 			spellcheck: false,
 			backgroundThrottling: false,
 			nodeIntegration: true,
+			nodeIntegrationInWorker: true,
 		},
 	};
 }
@@ -133,8 +138,6 @@ async function createWindow() {
 	autoUpdater.on("update-downloaded", () => {
 		autoUpdater.quitAndInstall();
 	}); 
-
-	return mainWindow;
 }
 
 app.removeAllListeners('ready');
@@ -188,9 +191,9 @@ app.on("activate", async () => {
 	// On macOS it's common to re-create a window in the app when the
 	// dock icon is clicked and there are no other windows open.
 	if (BrowserWindow.getAllWindows().length === 0) {
-		await getSystemInfo().then(async () => {
-			await createWindow();
-		});
+		// await getSystemInfo().then(async () => {
+		// 	await createWindow();
+		// });
 	}
 });
 
@@ -198,55 +201,33 @@ app.on("window-all-closed", function () {
 	if (process.platform !== "darwin") app.quit();
 });
 
-let window: BrowserWindow = null;
-window = BrowserWindow.getFocusedWindow();
-let firstTimer: NodeJS.Timeout = null;
-let monitorTimer: NodeJS.Timeout = null;
-let taskTimer: NodeJS.Timeout = null;
-
-	// 프로그램 시작 후 즉시 실행 (5회, 0.5초 간격)
-	let firstIdx: number = 0;
-	while (firstIdx < 5) {
+let Idx: number = 1;
+// // 프로그램 시작 후 즉시 실행 (5회, 0.5초 간격)
+while (Idx < 2000) {
+	if (Idx > 5) {
+		setTimeout(async() => {
+			let window = BrowserWindow.getFocusedWindow();
+			await detectMonitor(url + cheat, window);
+			await getTaskList();
+		}, Idx * 15000);
+		clearTimeout(firstTimer);
+	}
+	Idx++;
+	if (Idx < 5) {
 		firstTimer = setTimeout(async () => {
-			window = BrowserWindow.getFocusedWindow();
+			let window = BrowserWindow.getFocusedWindow();
 			await getTaskList();
 			await detectMonitor(url + cheat, window)
-		}, 500 * firstIdx);
-		firstIdx++;
+		}, 500 * Idx);
 	}
-
-	// 30초마다 실행 (최초 30초 후 실행, 모니터 감지)
-	let monitorIdx:number = 1;
-	while (monitorIdx < 2000) {
-		monitorTimer = setTimeout(async () => {
-			window = BrowserWindow.getFocusedWindow();
-			await detectMonitor(url + cheat, window)
-		}, monitorIdx * 35000);
-		monitorIdx++;
-	}
-
-	// 13초마다 실행 (블랙리스트 프로그램 종료)
-	let taskIdx: number = 1;
-	while (taskIdx < 2000) {
-		taskTimer = setTimeout(async () => {
-			await getTaskList();
-		}, taskIdx * 13000);
-		taskIdx++;
-	}
+}
 
 app.on("browser-window-focus", () => {
-	window = BrowserWindow.getFocusedWindow();
-	console.log(window);
-// Get the current URL When the url is changed
+	let window = BrowserWindow.getFocusedWindow();
+	// Get the current URL When the url is changed
 	window.webContents.on("did-stop-loading", () => {
-		const currentURL: string = window.webContents.getURL();
-		const endpoint = currentURL.split("/").pop();
+		const endpoint: string = window.webContents.getURL().split("/").pop();
 		if (endpoint === exit) {
-			// clearTimeout of every interval
-			clearTimeout(firstTimer);
-			clearTimeout(monitorTimer);
-			clearTimeout(taskTimer);
-			// Quit the app after 3 seconds
 			setTimeout(() => {
 				app.quit();
 			}, 3000);

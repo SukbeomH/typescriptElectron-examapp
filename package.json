@@ -1,6 +1,6 @@
 {
   "name": "closed-browser-for-testing",
-  "version": "23.7.19",
+  "version": "23.8.31",
   "description": "Electron Exam App for Remote Testing",
   "keywords": [
     "electron",
@@ -23,7 +23,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "start": "yarn build && electron --trace-warnings ./typescript/main.js",
+    "start": "yarn build && electron --trace-warnings --unhandled-rejections=strict ./typescript/main.js",
     "package": "yarn build && electron-builder build -wm --config ./src/electron-builder.yml",
     "dist": "yarn build && electron-builder -wm --publish onTagOrDraft --config ./src/electron-builder.yml"
   },
