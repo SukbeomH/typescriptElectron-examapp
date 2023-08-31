@@ -1,10 +1,10 @@
-import { execSync } from "child_process";
+import { exec, execSync } from "child_process";
 import { BrowserWindow } from "electron";
 import { app } from "electron";
 
 // Get the number of displays
-const getHardWareDisplays = () => {
-	if (process.platform === "darwin") {
+export const getHardWareDisplays = async (): Promise<number> => {
+		if (process.platform === "darwin") {
 		// execute the shell script to get the displays
 		const displays = execSync(
 			`system_profiler SPDisplaysDataType -json`
@@ -17,26 +17,28 @@ const getHardWareDisplays = () => {
 				.length;
 		return Number(numberOfDisplays);
 	} else if (process.platform === "win32") {
-		// excute the shell script to get the displays(powershell)
-		const displays = execSync(
+		// execute the shell script to get the displays(cmd)
+		const displayCMD = Number(execSync(
+			`for /F %M in ('wmic path Win32_PnPEntity where "Service='monitor' and Status='OK'" get DeviceID /VALUE ^ ^| find /C "=" ') do echo %M`
+		));
+		const displayPS = Number(execSync(
 			`powershell.exe @(Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams).Length`
-		);
-		const displayNo = displays.toString();
-		return Number(displayNo);
+		));
+		// larger number is the number of displays
+		const displays = displayCMD > displayPS ? displayCMD : displayPS;
+		
+		return displays;
 	}
 };
 
 // Get Display information and check if there are more than one display in every 10 seconds
-export const detectMonitor = async (url) => {
+export async function detectMonitor(url: string, window: BrowserWindow): Promise<void> {
 	// get Monitors
-	const monitors = getHardWareDisplays();
+	const monitors = await getHardWareDisplays();
 	// Check if there are more than one display
 	if (monitors > 1) {
-		const mainWindow = BrowserWindow.getFocusedWindow();
-		await mainWindow.loadURL(url);
-		setTimeout(() => {
-			app.quit();
-		}, 10000);
+		await window.loadURL(url).catch((err) => {
+			console.log(err);
+		});
 	}
-	return;
 };

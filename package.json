@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ACG-INSA/ReleaseElectron_CAU"
+    "url": "https://github.com/ACG-INSA/ReleaseElectron_SKCT"
   },
   "license": "MIT",
   "main": "typescript/main.js",
@@ -23,7 +23,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "start": "yarn build && electron ./typescript/main.js",
+    "start": "yarn build && electron --trace-warnings ./typescript/main.js",
     "package": "yarn build && electron-builder build -wm --config ./src/electron-builder.yml",
     "dist": "yarn build && electron-builder -wm --publish onTagOrDraft --config ./src/electron-builder.yml"
   },
@@ -33,7 +33,7 @@
     "@types/yargs": "^17.0.24",
     "@typescript-eslint/eslint-plugin": "^5.60.0",
     "@typescript-eslint/parser": "^5.60.0",
-    "electron": "^25.2.0",
+    "electron": "^26.1.0",
     "electron-builder": "^24.4.0",
     "electron-packager": "^17.1.1",
     "electron-squirrel-startup": "^1.0.0",
@@ -45,7 +45,6 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "electron-progressbar": "^2.1.0",
     "electron-updater": "^6.1.1",
     "find-process": "^1.4.7"
   }

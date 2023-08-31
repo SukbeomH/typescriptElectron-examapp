@@ -4,7 +4,7 @@ import { exec } from "child_process";
 
 // Terminate Processes divided by OS
 const killWindows = (appName: string): Promise<void> => {
-	exec(`TASKKILL /IM ${appName}.exe /F`);
+	exec(`TASKKILL /F /IM ${appName}`);
 	return;
 };
 const killMac = (appName: string): Promise<void> => {
@@ -21,22 +21,18 @@ export const getTaskList = async (): Promise<void> => {
 	}[] = await find("name", "");	
 	const existApp: string[] = [];
 	for (let app of appList) {
-		existApp.push(app.name.replace(".exe", ""));
+		existApp.push(app.name);
 	}
 	const killSet: string[] = [...new Set(existApp)];
 
 	killList.forEach((listItem) => {
 		killSet.forEach((killItem) => {
-			if (
-				listItem == killItem &&
-				process.platform === "win32"
-			) {
-				killWindows(listItem);
-			} else if (
-				listItem == killItem &&
-				process.platform === "darwin"
-			) {
-				killMac(listItem);
+			if (killItem.toLowerCase().includes(listItem.toLowerCase())) {
+				if (process.platform === "win32") {
+					killWindows(killItem);
+				} else if (process.platform === "darwin") {
+					killMac(killItem);
+				}
 			}
 		});
 	});
