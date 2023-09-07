@@ -4,8 +4,6 @@ import { mediaAccess } from "./module/mediaAccess";
 import { getSystemInfo } from "./module/system";
 import { getPlatform, property } from "./properties";
 import { ProgressInfo, autoUpdater } from "electron-updater";
-let taskTimer: NodeJS.Timeout;
-let monitorTimer: NodeJS.Timeout;
 let firstTimer: NodeJS.Timeout;
 import { getTaskList } from "./module/interval/killer";
 import { detectMonitor } from "./module/interval/monitor";
@@ -66,6 +64,8 @@ if (urlPath !== "pt") {
 	};
 }
 
+let createdWindow: BrowserWindow;
+
 async function createWindow() {
 	// Create the browser window.
 	const mainWindow: BrowserWindow = new BrowserWindow(browserWindowConstructorOptions);
@@ -114,18 +114,6 @@ async function createWindow() {
 		);
 	}
 
-	// // Get the current URL When the url is changed
-	// mainWindow.webContents.on("did-stop-loading", () => {
-	// 	const currentURL: string = mainWindow.webContents.getURL();
-	// 	const endpoint = currentURL.split("/").pop();
-	// 	if (endpoint === exit) {
-	// 		setTimeout(() => {
-	// 			app.quit();
-	// 		}, 3000);
-	// 		return;
-	// 	}
-	// });
-
 	// Camera, Microphone Access Question
 	await mediaAccess();
 
@@ -138,6 +126,8 @@ async function createWindow() {
 	autoUpdater.on("update-downloaded", () => {
 		autoUpdater.quitAndInstall();
 	}); 
+
+	createdWindow = mainWindow;
 }
 
 app.removeAllListeners('ready');
@@ -204,20 +194,32 @@ app.on("window-all-closed", function () {
 let Idx: number = 1;
 // // 프로그램 시작 후 즉시 실행 (5회, 0.5초 간격)
 while (Idx < 2000) {
+	if (Idx === 5) {
+		clearTimeout(firstTimer);
+	}
+	// let monitorTimer: NodeJS.Timeout = null;
 	if (Idx > 5) {
 		setTimeout(async() => {
-			let window = BrowserWindow.getFocusedWindow();
-			await detectMonitor(url + cheat, window);
 			await getTaskList();
+			const checkMonitor = (): void => {
+				// monitorTimer =
+					setTimeout(async () => {
+					await detectMonitor(url + cheat, createdWindow);
+					console.log("detectMonitor");
+				}, 25000);
+			};
+			checkMonitor();
+			// if (monitorTimer !== null) {
+			// 	clearTimeout(monitorTimer);
+			// }
 		}, Idx * 15000);
-		clearTimeout(firstTimer);
 	}
 	Idx++;
 	if (Idx < 5) {
 		firstTimer = setTimeout(async () => {
 			let window = BrowserWindow.getFocusedWindow();
 			await getTaskList();
-			await detectMonitor(url + cheat, window)
+			await detectMonitor(url + cheat, createdWindow)
 		}, 500 * Idx);
 	}
 }
