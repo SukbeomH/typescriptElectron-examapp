@@ -112,16 +112,14 @@ const createWindow = () => {
 
 app.whenReady().then(async () => {
   const systemVersion = Number((await si.osInfo()).release.split('.')[0]);
-  const systemCore = (await si.cpu()).cores;
+  const systemCore = (await si.cpu()).physicalCores;
+  const systemThread = (await si.cpu()).cores;
   const systemMemory = Math.floor((await si.mem()).total / 1024**3);
-  // console.log(`systemVersion : ${systemVersion}`);
-  // console.log(`core : ${systemCore}`);
-  // console.log(`systemMemory : ${systemMemory}`);
 
   let systemResult = false;
 
   // 듀얼코어 && RAM 4GB이상 && 윈도우10 이상만 실행가능
-  if (systemCore < 2 || systemMemory < 3 || systemVersion < 10) {
+  if (systemCore < 2 || systemMemory < 3 || systemVersion < 100) {
     systemResult = false;
   } else {
     systemResult = true;
@@ -170,11 +168,13 @@ app.whenReady().then(async () => {
         `[내 PC 사양]\n
       - 시스템: Windows ${systemVersion}\n
       - CPU 코어: ${systemCore} Core\n
+      - CPU 스레드: ${systemThread} thread\n
       - 메모리 (RAM): ${systemMemory} GB\n
       \n
       [최소 사양]\n	
       - 시스템: Windows 10\n	
       - CPU 코어: 2 Core 이상\n
+      - CPU 스레드: 4 thread 이상\n
       - 메모리 (RAM): 4 GB 이상\n`,
       buttons: ["종료"],
     });
