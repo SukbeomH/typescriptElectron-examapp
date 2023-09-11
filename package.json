@@ -1,6 +1,6 @@
 {
-  "name": "typescript-electron-exam-app",
-  "version": "10.0.0",
+  "name": "closed-browser-for-testing",
+  "version": "23.9.8",
   "description": "Electron Exam App for Remote Testing",
   "keywords": [
     "electron",
@@ -15,38 +15,38 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/SukbeomH/typescriptElectron-examapp"
+    "url": "https://github.com/ACG-INSA/ReleaseElectron_SKCT"
   },
   "license": "MIT",
-  "main": "typescript/main.js",
+  "main": "typescript/index.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "start": "yarn build && electron ./typescript/main.js",
-    "package": "yarn build && electron-builder build -wm --config ./src/config.js",
-    "dist": "yarn build && electron-builder -wm --publish onTagOrDraft"
+    "start": "yarn build && electron --trace-warnings --unhandled-rejections=strict ./typescript/index.js",
+    "package": "yarn build && electron-builder build -wm --config ./src/electron-builder.yml",
+    "dist": "yarn build && electron-builder -wm --publish onTagOrDraft --config ./src/electron-builder.yml"
   },
   "devDependencies": {
-    "@electron/notarize": "^1.2.4",
+    "@electron/notarize": "^2.1.0",
     "@types/node": "^20.3.1",
     "@types/yargs": "^17.0.24",
-    "@typescript-eslint/eslint-plugin": "^5.60.0",
-    "@typescript-eslint/parser": "^5.60.0",
-    "dotenv": "^16.3.1",
-    "electron": "^24.3.0",
-    "electron-builder": "^24.4.0",
-    "electron-packager": "^17.1.1",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
+    "electron": "^26.2.0",
+    "electron-builder": "^24.6.4",
+    "electron-packager": "^17.1.2",
     "electron-squirrel-startup": "^1.0.0",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "prettier": "^2.8.8",
+    "eslint": "^8.48.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.3"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
-    "electron-updater": "^6.1.1",
-    "find-process": "^1.4.7"
+    "electron-updater": "^6.1.4",
+    "find-process": "^1.4.7",
+    "systeminformation": "^5.21.4"
   }
 }

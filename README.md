@@ -37,14 +37,14 @@ yarn dist
 ### 3. 업데이트 레포지토리 설정
 - package.json 파일의 repository.url을 변경한다.
 - src/module/config.js 파일의 publish.repo를 변경한다. ( repository.url과 동일하게 )
-- 레포지토리가 없다면 github에 레포지토리를 생성한다. ( Release-${앱 이름} 형식으로 생성한다. )
+- 레포지토리가 없다면 github에 레포지토리를 생성한다. ( Release_${앱 이름} 형식으로 생성한다. )
 
 ### 4. 내부 연결 URL 변경
 - properties.js 파일의 url을 변경한다.
 - main.js 파일의 url을 변경한다.
 
 ### 5. 앱 설치 파일 생성
-- yarn build 로 앱을 생성
+- yarn package 로 앱을 생성
 - 지정된 레포지토리에 새로운 릴리즈를 생성한다 ( TAG는 semver 형식으로 생성한다. ex> v0.0.1 )
 
 ### 6. 앱 업데이트

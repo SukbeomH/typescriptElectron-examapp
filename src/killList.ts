@@ -1,4 +1,4 @@
-export const killList = [
+export const KILL_APP_LIST = [
 	"Discord",
 	"Slack",
 	"Teams",
@@ -15,7 +15,7 @@ export const killList = [
 	"nvcontainer",
 	"amddvr",
 	"kalmuri",
-	"excel",
+	"EXCEL",
 	"powerpnt",
 	"winword",
 	"hwp",
