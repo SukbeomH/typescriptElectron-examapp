@@ -9,7 +9,7 @@ yarn dist
 
 ### of Monitors, Chat apps, Auto close apps, Block Screen capture and block Gestures
 
-- ver 5.5.1
+- ver 23.9.11
 
 1. Killing background apps func is disabled at default.
 2. Update the readme.md
@@ -24,12 +24,17 @@ yarn dist
 
 # How to
 
+## 00. Modify the package.example.json && electron-builder.example.yml && src/properties.ts
+- package.example.json -> package.json
+- electron-builder.example.yml -> electron-builder.yml
+- src/properties.example.ts -> src/properties.ts
+
 ### 0. yarn install
 
 ### 1. 앱 아이콘 변경 및 앱 이름 변경 
 - image 폴더에 제작하려는 앱의 이름과 동일한 png 파일을 넣는다.
-- src/module/electron-builder.yml 파일의 productName을 제작하려는 앱의 이름으로 변경한다.
-- src/module/electron-builder.yml 파일의 icon 경로를 제작하려는 앱의 이름으로 변경한다.
+- src/electron-builder.yml 파일의 productName을 제작하려는 앱의 이름으로 변경한다.
+- src/electron-builder.yml 파일의 icon 경로를 제작하려는 앱의 이름으로 변경한다.
 
 ### 2. 앱 버전 변경
 - package.json 파일의 version을 변경한다. ( 년도.월.일 )
