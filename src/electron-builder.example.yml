@@ -1,0 +1,47 @@
+productName: ACG_TEST
+appId: com.${productName}.${productName}_app
+copyright: Copyright © 2023 SUKBEOM.H 
+
+asar: true
+
+win:
+  icon: ../image/TEST.png
+  target:
+    - target: nsis
+      arch: x64
+  certificateFile: certificate/cert.pfx
+  certificatePassword: password_is_password_for_cert.pfx
+
+portable:
+  artifactName: ${productName}.${ext}
+
+nsis:
+  deleteAppDataOnUninstall: true
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: true
+  uninstallDisplayName: ${productName}_uninstaller
+  warningsAsErrors: false
+  artifactName: ${productName}_Windows.${ext}
+
+mac:
+  icon: ../image/TEST.png
+  target:
+    - target: default
+      arch: ['universal']
+      # arch: ['x64', 'arm64']
+  category: public.app-category.education
+  artifactName: ${productName}_Mac_${arch}.${ext}
+  type: distribution
+  minimumSystemVersion: 10.12.0
+  hardenedRuntime: true
+  entitlements: entitlements.mac.plist
+  gatekeeperAssess: false
+  # notarize: true
+
+publish:
+    provider: github
+    token: ghp_github_token_here@@
+    releaseType: release
+
+# afterSign: src/notarize.js

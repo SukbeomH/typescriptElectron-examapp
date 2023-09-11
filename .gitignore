@@ -6,4 +6,5 @@ image
 .env
 *.env
 electron-builder.yml
-properties.*
+properties.ts
+package.json

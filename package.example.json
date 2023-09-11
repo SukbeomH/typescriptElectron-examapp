@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ACG-INSA/ReleaseElectron_ACG_TEST"
+    "url": "YOUR_GIT_URL_FOR_RELEASE"
   },
   "license": "MIT",
   "main": "typescript/index.js",
