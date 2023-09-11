@@ -7,7 +7,7 @@ import { property } from './properties';
 import { KILL_APP_LIST } from './killList';
 
 // Get Platform from properties.ts
-const { url, code, exit, cheat } = property.SK_PLATFORM;
+const { url, code, exit, cheat } = property.platform.ACG;
 
 // 허용할 모니터 갯수 (ex. 기본 세팅값: 1, 테스트 진행시: 2)
 const DISPLAY_CNT = 1;
@@ -111,20 +111,39 @@ const createWindow = () => {
 }
 
 app.whenReady().then(async () => {
-  const systemVersion = Number((await si.osInfo()).release.split('.')[0]);
-  const systemCore = (await si.cpu()).cores;
-  const systemMemory = Math.floor((await si.mem()).total / 1024**3);
-  // console.log(`systemVersion : ${systemVersion}`);
-  // console.log(`core : ${systemCore}`);
-  // console.log(`systemMemory : ${systemMemory}`);
+  const requiredCore: number = 2;
+  const requiredThread: number = 4;
+  const requiredMemory: number = 4;
+  const requiredVersion: number = 10;
 
-  let systemResult = false;
+  const systemVersion = Number((await si.osInfo()).release.split('.')[0]);
+  const systemCore: number = (await si.cpu()).physicalCores;
+  const systemThread: number = (await si.cpu()).cores;
+  const systemMemory: number = Math.floor((await si.mem()).total / 1024 ** 3);
+
+  let systemVersionMsg: string = '';
+  let requiredVersionMsg: string = '';
+
+  let systemResult: boolean = false;
 
   // 듀얼코어 && RAM 4GB이상 && 윈도우10 이상만 실행가능
-  if (systemCore < 2 || systemMemory < 3 || systemVersion < 10) {
+  if (
+    systemCore < requiredCore
+    || systemThread < requiredThread
+    || systemMemory < requiredMemory
+    || systemVersion < requiredVersion
+  ) {
     systemResult = false;
   } else {
     systemResult = true;
+  }
+  // OS 버전에 따라서 메시지 변경 (윈도우, 맥)
+  if (process.platform === "win32") {
+    systemVersionMsg = `Windows ${systemVersion}`;
+    requiredVersionMsg = `Windows ${requiredVersion}`;
+  } else if (process.platform === "darwin") {
+    systemVersionMsg = `MacOS ${systemVersion}`;
+    requiredVersionMsg = `MacOS ${requiredVersion}`;
   }
   
   if (systemResult) {
@@ -168,14 +187,16 @@ app.whenReady().then(async () => {
       message: `최소 사양 기준 이상의 PC로 교체하여\n진행해 주세요.`,
       detail:
         `[내 PC 사양]\n
-      - 시스템: Windows ${systemVersion}\n
+      - 시스템: ${systemVersionMsg}\n
       - CPU 코어: ${systemCore} Core\n
+      - CPU 스레드: ${systemThread} thread\n
       - 메모리 (RAM): ${systemMemory} GB\n
       \n
       [최소 사양]\n	
-      - 시스템: Windows 10\n	
-      - CPU 코어: 2 Core 이상\n
-      - 메모리 (RAM): 4 GB 이상\n`,
+      - 시스템: ${requiredVersionMsg} 이상\n
+      - CPU 코어: ${requiredCore} Core 이상\n
+      - CPU 스레드: ${requiredThread} thread 이상\n
+      - 메모리 (RAM): ${requiredMemory} GB 이상\n`,
       buttons: ["종료"],
     });
     if (response === 0) {
@@ -245,9 +266,9 @@ const killAppProcess = () => {
 const runSecurity = () => {
   killAppProcess();
   if (screen.getAllDisplays().length > DISPLAY_CNT) {
-    const url = win.webContents.getURL();
-		const endpoint = url.split("/").pop();
-
+    const clientURL = win.webContents.getURL();
+    const endpoint = clientURL.split("/").pop();
+    // url + cheat 페이지가 아니면 경고 페이지로 이동
     if (endpoint !== cheat) {
       //경고 페이지로 이동
       win.webContents.loadURL(url + cheat);

@@ -28,20 +28,19 @@ yarn dist
 
 ### 1. 앱 아이콘 변경 및 앱 이름 변경 
 - image 폴더에 제작하려는 앱의 이름과 동일한 png 파일을 넣는다.
-- src/module/config.js 파일의 productName을 제작하려는 앱의 이름으로 변경한다.
-- src/module/config.js 파일의 icon 경로를 제작하려는 앱의 이름으로 변경한다.
+- src/module/electron-builder.yml 파일의 productName을 제작하려는 앱의 이름으로 변경한다.
+- src/module/electron-builder.yml 파일의 icon 경로를 제작하려는 앱의 이름으로 변경한다.
 
 ### 2. 앱 버전 변경
 - package.json 파일의 version을 변경한다. ( 년도.월.일 )
 
 ### 3. 업데이트 레포지토리 설정
 - package.json 파일의 repository.url을 변경한다.
-- src/module/config.js 파일의 publish.repo를 변경한다. ( repository.url과 동일하게 )
 - 레포지토리가 없다면 github에 레포지토리를 생성한다. ( Release_${앱 이름} 형식으로 생성한다. )
 
 ### 4. 내부 연결 URL 변경
-- properties.js 파일의 url을 변경한다.
-- main.js 파일의 url을 변경한다.
+- properties.ts 파일의 url을 변경한다.
+- index.ts 파일의 url을 변경한다.
 
 ### 5. 앱 설치 파일 생성
 - yarn package 로 앱을 생성
