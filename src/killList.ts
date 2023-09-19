@@ -32,12 +32,16 @@ export const KILL_APP_LIST = [
 	"between",
 	"teamviewer",
 	"Bandicamera",
-	"Chrome",
+	"Google Chrome",
+	"Chromium",
+	"chrome",
 	"Firefox",
-	"MicrosoftEdge",
+	"Microsoft Edge",
+	"edge",
 	"Opera",
 	"Brave",
 	"Vivaldi",
 	"iexplore",
 	"safari",
+	"whale"
 ];

@@ -32,16 +32,19 @@ const createWindow = () => {
     // 맥에서 화면전환하는 제스쳐를 막을 수 있음
 		kiosk: true,
     webPreferences: {
-        nodeIntegrationInWorker: true,
-        preload: path.join(__dirname, "preload.js"),
-        defaultEncoding: "UTF-8",
-        spellcheck: false,
-        backgroundThrottling: false,
+      nodeIntegrationInWorker: true,
+      preload: path.join(__dirname, "preload.js"),
+      defaultEncoding: "UTF-8",
+      spellcheck: false,
+      backgroundThrottling: false,
+      devTools: false,
+      // v8CacheOptions: "code",
     },
   });
 	win.setMenu(null);
 	win.setMenuBarVisibility(false);
   win.setAutoHideMenuBar(true);
+  win.removeMenu();
 
   // win.setContentProtection(true) 인 경우 외부 어플리케이션에 의해 캡쳐되는 것을 막기 때문에 응용프로그램 화면공유가 안되고 바탕화면이 공유됨
   if (process.platform === 'darwin') {
@@ -111,7 +114,7 @@ const createWindow = () => {
 }
 
 app.whenReady().then(async () => {
-  const requiredCore: number = 2;
+  const requiredCore: number = 4;
   const requiredThread: number = 4;
   const requiredMemory: number = 4;
   const requiredVersion: number = 10;
@@ -159,14 +162,23 @@ app.whenReady().then(async () => {
 				"CommandOrControl+R",
 				"CommandOrControl+Shift+R",
 				"CommandOrControl+C",
-				"CommandOrControl+V",
+        "CommandOrControl+V",
+        "CommandOrControl+S",
         "PrintScreen",
         "F11",
 				"CommandOrControl+Shift+1",
 				"CommandOrControl+Shift+2",
 				"CommandOrControl+Shift+3",
 				"CommandOrControl+Shift+4",
-				"CommandOrControl+Shift+5",
+        "CommandOrControl+Shift+5",
+        "Alt+Tab",
+        "Alt+Shift+Tab",
+        "CommandOrControl+Tab",
+        "Control+Alt+Delete",
+        "Option+Command+Esc",
+        "Option+Command+I",
+        "Option+Command+U",
+        "Option+Command+J",
 			],
 			() => {
 				return false;
@@ -240,7 +252,7 @@ const killAppProcess = () => {
   // 계속해서 실행중인 프로세스를 감시할지 여부
   let isDetectRunProcess = false;
 
-  // 실행중인 프로세램 전체를 받아온다
+  // 실행중인 프로세스의 전체 리스트를 받아온다
   find('name', '')
   .then((list) => {
     KILL_APP_LIST.forEach((pName) => {
