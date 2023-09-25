@@ -24,8 +24,8 @@ yarn dist
 
 # How to
 
-## 00. Modify the package.example.json && electron-builder.example.yml && src/properties.ts
-- package.example.json -> package.json
+## 00. Modify the package.txt && electron-builder.example.yml && src/properties.ts
+- package.txt -> package.json
 - electron-builder.example.yml -> electron-builder.yml
 - src/properties.example.ts -> src/properties.ts
 

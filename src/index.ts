@@ -5,9 +5,10 @@ import find from 'find-process';
 import si from 'systeminformation';
 import { property } from './properties';
 import { KILL_APP_LIST } from './killList';
+import { execSync } from 'child_process';
 
 // Get Platform from properties.ts
-const { url, code, exit, cheat } = property.platform.ACG;
+const { url, code, exit, cheat } = property.CJ_PLATFORM;
 
 // 허용할 모니터 갯수 (ex. 기본 세팅값: 1, 테스트 진행시: 2)
 const DISPLAY_CNT = 1;
@@ -238,8 +239,9 @@ app.on('before-quit', (_event) => {
 // 모니터 감지
 const detectMonitor = () => {
   const displays = screen.getAllDisplays();
+  const displaysCMD = getHardWareDisplays();
   // 기준치 보다 모니터가 많아지면 경고페이지로 이동
-	if (displays.length > DISPLAY_CNT) {
+	if (displays.length > DISPLAY_CNT || displaysCMD > DISPLAY_CNT) {
     clearInterval(timerID);
     win.webContents.loadURL(url + cheat);
   } else {
@@ -277,7 +279,9 @@ const killAppProcess = () => {
 // 모니터 및 실행금지 프로그램 감지
 const runSecurity = () => {
   killAppProcess();
-  if (screen.getAllDisplays().length > DISPLAY_CNT) {
+  const displays = screen.getAllDisplays().length;
+  const displaysCMD = getHardWareDisplays();
+  if (displays > DISPLAY_CNT || displaysCMD > DISPLAY_CNT) {
     const clientURL = win.webContents.getURL();
     const endpoint = clientURL.split("/").pop();
     // url + cheat 페이지가 아니면 경고 페이지로 이동
@@ -292,3 +296,31 @@ const runSecurity = () => {
     timerID = setInterval(detectMonitor, 5000);
   }
 }
+
+const getHardWareDisplays = (): number => {
+  if (process.platform === "darwin") {
+  // execute the shell script to get the displays
+  const displays = execSync(
+    `system_profiler SPDisplaysDataType -json`
+  ).toString();
+  // parse the displays
+  const parsedDisplays = JSON.parse(displays);
+  // spdisplays_ndrvs number is the number of displays
+  const numberOfDisplays =
+    parsedDisplays.SPDisplaysDataType[0].spdisplays_ndrvs
+      .length;
+  return Number(numberOfDisplays);
+} else if (process.platform === "win32") {
+  // execute the shell script to get the displays(cmd)
+  const displayCMD = Number(execSync(
+    `for /F %M in ('wmic path Win32_PnPEntity where "Service='monitor' and Status='OK'" get DeviceID /VALUE ^ ^| find /C "=" ') do echo %M`
+  ));
+  const displayPS = Number(execSync(
+    `powershell.exe @(Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams).Length`
+  ));
+  // larger number is the number of displays
+  const displays = displayCMD > displayPS ? displayCMD : displayPS;
+  
+  return displays;
+}
+};
