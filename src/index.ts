@@ -5,10 +5,10 @@ import find from 'find-process';
 import si from 'systeminformation';
 import { property } from './properties';
 import { KILL_APP_LIST } from './killList';
-import { execSync } from 'child_process';
+import { exec, spawn } from 'child_process';
 
 // Get Platform from properties.ts
-const { url, code, exit, cheat } = property.CJ_PLATFORM;
+const { url, code, exit, cheat } = property.monit.LG_WAY_FIT;
 
 // 허용할 모니터 갯수 (ex. 기본 세팅값: 1, 테스트 진행시: 2)
 const DISPLAY_CNT = 1;
@@ -18,7 +18,14 @@ let win: BrowserWindow;
 
 // 타이머 ID 저장 변수
 let timerID: NodeJS.Timeout;
+let timerIntervalID: NodeJS.Timeout;
 
+// Disable the GPU Acceleration
+app.disableHardwareAcceleration();
+app.commandLine.appendSwitch("disable-software-rasterizer");
+
+
+// Create the browser window
 const createWindow = () => {
   win = new BrowserWindow({
     // width: 800,
@@ -41,7 +48,7 @@ const createWindow = () => {
       devTools: false,
       // v8CacheOptions: "code",
     },
-  });
+  }); 
 	win.setMenu(null);
 	win.setMenuBarVisibility(false);
   win.setAutoHideMenuBar(true);
@@ -95,11 +102,6 @@ const createWindow = () => {
     systemPreferences.askForMediaAccess('camera');
   }
 
-  // const { type, versions } = process;
-  // console.log(`process type : ${type}`);
-  // console.log(`process version : ${JSON.stringify(versions)}`);
-  // console.log(process.platform);
-
 	// Check the update
   autoUpdater.checkForUpdates().then((result: UpdateCheckResult) => {
     // Create Progress Bar for the autoUpdater
@@ -115,18 +117,14 @@ const createWindow = () => {
 }
 
 app.whenReady().then(async () => {
-  const requiredCore: number = 4;
+  const requiredCore: number = 2;
   const requiredThread: number = 4;
   const requiredMemory: number = 4;
-  const requiredVersion: number = 10;
 
-  const systemVersion = Number((await si.osInfo()).release.split('.')[0]);
+  // const systemVersion = Number((await si.osInfo()).release.split('.')[0]);
   const systemCore: number = (await si.cpu()).physicalCores;
   const systemThread: number = (await si.cpu()).cores;
-  const systemMemory: number = Math.floor((await si.mem()).total / 1024 ** 3);
-
-  let systemVersionMsg: string = '';
-  let requiredVersionMsg: string = '';
+  const systemMemory: number = Math.ceil((await si.mem()).total / 1024 ** 3);
 
   let systemResult: boolean = false;
 
@@ -135,19 +133,11 @@ app.whenReady().then(async () => {
     systemCore < requiredCore
     || systemThread < requiredThread
     || systemMemory < requiredMemory
-    || systemVersion < requiredVersion
+    // || systemVersion < requiredVersion
   ) {
     systemResult = false;
   } else {
     systemResult = true;
-  }
-  // OS 버전에 따라서 메시지 변경 (윈도우, 맥)
-  if (process.platform === "win32") {
-    systemVersionMsg = `Windows ${systemVersion}`;
-    requiredVersionMsg = `Windows ${requiredVersion}`;
-  } else if (process.platform === "darwin") {
-    systemVersionMsg = `MacOS ${systemVersion}`;
-    requiredVersionMsg = `MacOS ${requiredVersion}`;
   }
   
   if (systemResult) {
@@ -176,10 +166,22 @@ app.whenReady().then(async () => {
         "Alt+Shift+Tab",
         "CommandOrControl+Tab",
         "Control+Alt+Delete",
-        "Option+Command+Esc",
-        "Option+Command+I",
-        "Option+Command+U",
-        "Option+Command+J",
+        "Alt+CommandOrControl+Esc",
+        "Alt+CommandOrControl+I",
+        "Alt+CommandOrControl+U",
+        "Alt+CommandOrControl+J",
+        "Super+Alt+R",
+        "Meta+Alt+R",
+        "Alt+Z",
+        "Super+Tab",
+        "Meta+Tab",
+        "Alt+CommandOrControl+Tab",
+        "Alt+F1",
+        "Control+Super+Alt+F1",
+        "Alt+F9",
+        "Alt+F8",
+        "Control+9",
+        "Control+0",
 			],
 			() => {
 				return false;
@@ -200,13 +202,11 @@ app.whenReady().then(async () => {
       message: `최소 사양 기준 이상의 PC로 교체하여\n진행해 주세요.`,
       detail:
         `[내 PC 사양]\n
-      - 시스템: ${systemVersionMsg}\n
       - CPU 코어: ${systemCore} Core\n
       - CPU 스레드: ${systemThread} thread\n
       - 메모리 (RAM): ${systemMemory} GB\n
       \n
       [최소 사양]\n	
-      - 시스템: ${requiredVersionMsg} 이상\n
       - CPU 코어: ${requiredCore} Core 이상\n
       - CPU 스레드: ${requiredThread} thread 이상\n
       - 메모리 (RAM): ${requiredMemory} GB 이상\n`,
@@ -243,6 +243,7 @@ const detectMonitor = () => {
   // 기준치 보다 모니터가 많아지면 경고페이지로 이동
 	if (displays.length > DISPLAY_CNT || displaysCMD > DISPLAY_CNT) {
     clearInterval(timerID);
+    clearInterval(timerIntervalID);
     win.webContents.loadURL(url + cheat);
   } else {
     // 실행중인 프로그램 감지
@@ -254,26 +255,29 @@ const killAppProcess = () => {
   // 계속해서 실행중인 프로세스를 감시할지 여부
   let isDetectRunProcess = false;
 
-  // 실행중인 프로세스의 전체 리스트를 받아온다
-  find('name', '')
-  .then((list) => {
-    KILL_APP_LIST.forEach((pName) => {
-      const findApp = list.filter(row => (row.name.toLowerCase() === pName.toLowerCase()) || (row.name.toLowerCase().endsWith('.exe') && row.name.toLowerCase().slice(0, -4) === pName.toLowerCase()))
-      if (findApp.length > 0) {
-        isDetectRunProcess = true;
-        findApp.forEach((proc) => {
-          // 실행중인 프로그램 강제종료
-          process.kill(proc.pid);
-        });
-      }
-    })
-
-    // 실행방지 프로그램이 감지되지 않았다면, 타이머 종료
-    if (isDetectRunProcess === false) {
-      clearInterval(timerID);
-      // console.log('미감지');
+  find("name", "").then((appList) => {
+    const existApp: string[] = [];
+    for (let app of appList) {
+      existApp.push(app.name);
     }
-  })
+    const executedSet: string[] = [...new Set(existApp)];
+    KILL_APP_LIST.forEach((killListItem) => {
+      executedSet.forEach((executedItem) => {
+        if (executedItem.toLowerCase().includes(killListItem.toLowerCase())) {
+          isDetectRunProcess = true;
+          if (process.platform === "win32") {
+            killWindows(executedItem);
+          } else if (process.platform === "darwin") {
+            killMac(executedItem);
+          }
+        }
+      });
+      // 실행방지 프로그램이 감지되지 않았다면, 타이머 종료
+      if (isDetectRunProcess === false) {
+        clearInterval(timerID);
+      }
+    });
+  });
 }
 
 // 모니터 및 실행금지 프로그램 감지
@@ -293,34 +297,45 @@ const runSecurity = () => {
     //blur이벤트로 여러번 실행될수 있어서 한번만 실행되게
     clearInterval(timerID);
     //모니터가 1개 일 경우 타이머 실행
-    timerID = setInterval(detectMonitor, 5000);
+    timerID = setInterval(detectMonitor, 31000);
   }
 }
 
 const getHardWareDisplays = (): number => {
   if (process.platform === "darwin") {
-  // execute the shell script to get the displays
-  const displays = execSync(
-    `system_profiler SPDisplaysDataType -json`
-  ).toString();
-  // parse the displays
-  const parsedDisplays = JSON.parse(displays);
-  // spdisplays_ndrvs number is the number of displays
-  const numberOfDisplays =
-    parsedDisplays.SPDisplaysDataType[0].spdisplays_ndrvs
-      .length;
-  return Number(numberOfDisplays);
-} else if (process.platform === "win32") {
-  // execute the shell script to get the displays(cmd)
-  const displayCMD = Number(execSync(
-    `for /F %M in ('wmic path Win32_PnPEntity where "Service='monitor' and Status='OK'" get DeviceID /VALUE ^ ^| find /C "=" ') do echo %M`
-  ));
-  const displayPS = Number(execSync(
-    `powershell.exe @(Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams).Length`
-  ));
-  // larger number is the number of displays
-  const displays = displayCMD > displayPS ? displayCMD : displayPS;
-  
-  return displays;
-}
+    // execute the shell script to get the displays
+    const cmd = spawn('bash', [
+      '-c',
+      `system_profiler SPDisplaysDataType | grep "Resolution" | wc -l`
+    ]);
+    const numberOfDisplays = cmd.stdout.toString().trim();
+    
+    // return the number of displays
+    return Number(numberOfDisplays);
+  } else if (process.platform === "win32") {
+      // execute the shell script to get the displays(cmd)
+      const cmd = spawn('cmd.exe', ['/c', `wimc path Win32_PnPEntity where "Service='monitor' and Status='OK'" get DeviceID /VALUE | find /C "="`]);
+      const displayCMD = Number(cmd.stdout.toString().trim());
+      const powershell = spawn('powershell.exe', [
+        '-NoProfile',
+        '-Command',
+        '@(Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams).Length'
+      ]);
+      const displayPS = Number(powershell.stdout.toString().trim());
+    // larger number is the number of displays
+    const displays = displayCMD > displayPS ? displayCMD : displayPS;
+    
+    // return the number of displays
+    return displays;
+  }
+};
+
+// Terminate Processes divided by OS
+const killWindows = (appName: string): Promise<void> => {
+  exec(`TASKKILL /F /IM ${appName}`);
+  return;
+};
+const killMac = (appName: string): Promise<void> => {
+  exec(`killall ${appName}`);
+  return;
 };
